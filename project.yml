@@ -1,0 +1,75 @@
+name: FileMap
+options:
+  bundleIdPrefix: com.filemap
+  deploymentTarget:
+    macOS: "27.0"
+  createIntermediateGroups: true
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: 7.0.0
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "27.0"
+    DEVELOPMENT_TEAM: 74D6654UM8
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "Apple Development"
+    ENABLE_HARDENED_RUNTIME: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+    DEAD_CODE_STRIPPING: YES
+targets:
+  FileMap:
+    type: application
+    platform: macOS
+    sources:
+      - path: FileMap
+        excludes:
+          - "Resources/Fonts/**"
+      - path: FileMap/Resources/Fonts
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: GRDB
+    info:
+      path: FileMap/Info.plist
+      properties:
+        CFBundleDisplayName: FileMap
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSApplicationCategoryType: public.app-category.utilities
+        NSHumanReadableCopyright: "FileMap"
+        LSMinimumSystemVersion: "27.0"
+        NSPrincipalClass: NSApplication
+    entitlements:
+      path: FileMap/FileMap.entitlements
+      properties:
+        com.apple.security.app-sandbox: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.filemap.FileMap
+        PRODUCT_NAME: FileMap
+        ENABLE_PREVIEWS: NO
+  FileMapTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [FileMapTests]
+    dependencies:
+      - target: FileMap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.filemap.FileMapTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FileMap.app/Contents/MacOS/FileMap"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  FileMap:
+    build:
+      targets:
+        FileMap: all
+        FileMapTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [FileMapTests]
